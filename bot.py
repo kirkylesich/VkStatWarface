@@ -20,7 +20,7 @@ class VkBot:
                     response = self.message_handler(event.text)
                     self.send_response(response, event.user_id)
                 except Exception:
-                    self.send_response('Такого игрока не существует, либо команда не верна, напишите help', event.user_id)
+                    pass
 
     def message_handler(self, message_text):
         if message_text == 'help':
