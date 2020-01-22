@@ -16,6 +16,7 @@ class WarfacePageUser:
         page = requests.get(user_url).text
         soup = BeautifulSoup(page,'html.parser')
         return soup
+    
 
     def get_value_by_name_field(self, name):
         tag = self.soup.find('span', text=name)
@@ -79,7 +80,10 @@ class WarfaceUserProfile(WarfacePageUser):
 
     @property
     def clan(self):
-        return self.get_value_by_name_field('Состоит в клане')
+        try:
+            return self.get_value_by_name_field('Состоит в клане')
+        except Exception:
+            return 'Не состоит в клане'
 
     @property
     def replenished_bp(self):
@@ -96,6 +100,16 @@ class WarfaceUserProfile(WarfacePageUser):
     @property
     def restored_ob_value(self):
         return self.get_skill_value_by_skill_name('Восстановлено ОБ')
+    
+    @property
+    def pvp(self):
+        pvp_info = WarfaceUserMainPvp(self.username)
+        return pvp_info
+
+    @property
+    def pve(self):
+        pve_info = WarfaceUserMainPve(self.username)
+        return pve_info
 
 class WarfaceUserMainInfo(WarfacePageUser):
 
@@ -236,7 +250,30 @@ class WarfaceUserMainPvp(WarfaceUserMainInfo):
 class WarfaceUserMainPve(WarfaceUserMainInfo):
     profile_config = 'pve'
 
+    @property
+    def count_all_matches(self):
+        return self.get_value_by_name_field('Сыграно миссий')
 
+    @property
+    def count_all_victories(self):
+        return self.get_value_by_name_field('Пройдено миссий')
 
-wf_user = WarfaceUserMainPvp('Пираний')
-print(wf_user.sad.game_time)
+    @property
+    def count_all_draws(self):
+        return self.get_value_by_name_field('Провалено миссий')
+    
+    @property
+    def winrate(self):
+        return self.get_value_by_name_field('Процент выполненных миссий')
+
+    @property
+    def count_kicks_from_match(self):
+        return self.get_value_by_name_field('Исключений из миссий')
+
+    @property
+    def count_interrupted_mathces(self):
+        return self.get_value_by_name_field('Прервано миссий')
+
+    @property
+    def count_of_signs(self):
+        return self.get_value_by_name_field('Использовано знаков')
