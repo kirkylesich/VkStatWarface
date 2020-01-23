@@ -4,6 +4,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType
 import settings
 from apicore import WarfaceUserProfile, WarfaceUserMainPve, WarfaceUserMainPvp
 from views import *
+from threading import Thread
 
 class VkBot:
 
@@ -17,10 +18,13 @@ class VkBot:
         for event in self.long_poll.listen():
             if self.event_is_valid(event):
                 try:
-                    response = self.message_handler(event.text)
-                    self.send_response(response, event.user_id)
+                    Thread(target=self.give_response, args=(event.text, event.user_id)).start()
                 except Exception:
                     pass
+    
+    def give_response(self, event_text, event_user_id):
+        response = self.message_handler(event_text)
+        self.send_response(response, event_user_id)
 
     def message_handler(self, message_text):
         if message_text == 'help':
